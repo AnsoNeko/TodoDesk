@@ -172,6 +172,7 @@ async function create(main, title, kind, goal, unit, repeat = false) {
   );
   await main.getByRole('button', { name: '设置', exact: true }).click();
   await main.getByRole('heading', { name: /软件更新 · v\d+\.\d+\.\d+/ }).waitFor();
+  assert.equal(await main.getByRole('button', { name: '发布页面', exact: true }).count(), 0);
   await main.getByRole('button', { name: '静谧深色', exact: true }).click();
   await main.locator('html[data-theme="dark"]').waitFor();
   await floating.locator('html[data-theme="dark"]').waitFor();

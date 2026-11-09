@@ -1256,11 +1256,6 @@ h1 {
   margin: 0;
   font-size: 10px;
 }
-.update-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
 .update-settings progress {
   width: 100%;
   max-width: 200px;

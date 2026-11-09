@@ -34,7 +34,15 @@ import {
   Inbox,
   ShieldCheck,
 } from 'lucide-react';
-import type { Command, Snapshot, TaskInput, TaskRecord, WindowAction } from '../shared/model';
+import type {
+  Command,
+  Snapshot,
+  TaskInput,
+  TaskRecord,
+  UpdateAction,
+  UpdateState,
+  WindowAction,
+} from '../shared/model';
 import { UpdateSettings } from './UpdateSettings';
 
 type Page = 'today' | 'history' | 'summary' | 'settings';
@@ -66,6 +74,7 @@ export function App() {
   const [working, setWorking] = useState(0);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [dismissRecovery, setDismissRecovery] = useState(false);
+  const [updateState, setUpdateState] = useState<UpdateState>();
   const notify = (text: string, error = false) => setNotice({ text, error });
   const run = async (command: Command) => {
     setWorking((n) => n + 1);
@@ -86,12 +95,20 @@ export function App() {
   const control = (action: WindowAction) => {
     void window.todo.window(action).catch((error) => notify(errorText(error), true));
   };
+  const requestUpdate = (action: UpdateAction) => {
+    void window.todo
+      .update(action)
+      .then(setUpdateState)
+      .catch((error) => notify(errorText(error), true));
+  };
   useEffect(() => {
     if (!window.todo) {
       setLoadError('请通过 TodoDesk 桌面程序打开此界面。');
       return;
     }
     const off = window.todo.onChange(setData);
+    const offUpdate = compact ? undefined : window.todo.onUpdate(setUpdateState);
+    if (!compact) requestUpdate('status');
     window.todo
       .command({ type: 'refresh' })
       .then(setData)
@@ -104,6 +121,7 @@ export function App() {
     window.addEventListener('focus', refresh);
     return () => {
       off();
+      offUpdate?.();
       window.removeEventListener('focus', refresh);
     };
   }, []);
@@ -364,10 +382,13 @@ export function App() {
               </div>
               <button
                 className={`nav-item ${page === 'settings' ? 'selected' : ''}`}
+                aria-label="设置"
+                aria-description={updateState?.status === 'ready' ? '更新已就绪' : undefined}
                 onClick={() => go('settings')}
               >
                 <Settings2 size={19} />
                 <span>设置</span>
+                {updateState?.status === 'ready' && <b aria-hidden="true">可更新</b>}
               </button>
               <div className="local-status">
                 <i className="status-dot" />
@@ -818,6 +839,8 @@ export function App() {
                     </button>
                   </div>
                   <UpdateSettings
+                    state={updateState}
+                    onAction={requestUpdate}
                     summaryDirty={Object.entries(drafts).some(
                       ([day, content]) =>
                         content !== (data.summaries.find((s) => s.date === day)?.content ?? ''),

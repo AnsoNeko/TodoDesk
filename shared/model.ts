@@ -155,7 +155,7 @@ export const commandSchema = z.discriminatedUnion('type', [
 ]);
 export type Command = z.infer<typeof commandSchema>;
 export type WindowAction = 'main' | 'float' | 'hide' | 'minimize' | 'quit' | 'openDataFolder';
-export type UpdateAction = 'status' | 'check' | 'download' | 'install' | 'releases';
+export type UpdateAction = 'status' | 'check' | 'install';
 export type UpdateState = {
   currentVersion: string;
   status:
@@ -163,7 +163,6 @@ export type UpdateState = {
     | 'idle'
     | 'checking'
     | 'current'
-    | 'available'
     | 'downloading'
     | 'ready'
     | 'installing'
