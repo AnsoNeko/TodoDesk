@@ -29,7 +29,8 @@ export function createUpdates(publish: (state: UpdateState) => void, flush: () =
     autoUpdater.disableWebInstaller = true;
     autoUpdater.on('download-progress', ({ percent }) => {
       const progress = Math.floor(percent);
-      if (state.status === 'downloading' && progress !== state.progress) set({ ...state, progress });
+      if (state.status === 'downloading' && progress !== state.progress)
+        set({ ...state, progress });
     });
     autoUpdater.on('error', (error) => {
       if (state.status === 'installing') fail('无法启动更新安装，请重新检查更新。', error);
