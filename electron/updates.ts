@@ -73,7 +73,7 @@ export function createUpdates(publish: (state: UpdateState) => void, flush: () =
       set({ status: 'installing', version });
       try {
         await flush();
-        autoUpdater.quitAndInstall(true, true);
+        autoUpdater.quitAndInstall(true);
       } catch (error) {
         fail('无法启动更新安装，请重新检查更新。', error);
       }

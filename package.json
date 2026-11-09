@@ -66,6 +66,7 @@
     },
     "nsis": {
       "artifactName": "TodoDesk-Setup-${version}-${arch}.${ext}",
+      "include": "scripts/installer.nsh",
       "installerLanguages": [
         "zh_CN",
         "en_US"
